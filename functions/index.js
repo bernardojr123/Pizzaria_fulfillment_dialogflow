@@ -17,43 +17,81 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
   console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
-  function comprar_pizza(agent){
-    const contexto_nome = get_slot_atual(agent)
-    let resposta = ""
+  function comprar_um_pedido(agent){
+    const contexto_nome = get_slot_atual(agent);
+    let resposta = "";
     switch (contexto_nome) {
-      case "sabor1":
-          resposta = resolve_sabor1(agent)
-      break;
+			case "qtd1":
+					agent.clearOutgoingContexts();
+					break;
+			case "sabor1":
+          resposta = resolve_slot(agent, "sabor1", "sabor");
+					break;
+			case "tamanho1":
+          resposta = resolve_slot(agent, "tamanho1", "tamanho");
+      		break;
     }
     if (resposta !== ""){
       agent.add(resposta)
     }
   }
 
-  function resolve_sabor1(agent){
-    const contexto = agent.getContext("qtd_sabor1")
-    if (contexto === null){
-      agent.setContext({ name: 'qtd_sabor1', lifespan: 2, parameters: { qtd: 1 }})
-      return "";
+	function comprar_dois_pedidos(agent){
+    const contexto_nome = get_slot_atual(agent);
+    let resposta = "";
+    switch (contexto_nome) {
+			case "qtd1":
+			case "qtd2":
+					agent.clearOutgoingContexts();
+					break
+			case "sabor1":
+          resposta = resolve_slot(agent, "sabor1", "sabor");
+					break;
+			case "tamanho1":
+          resposta = resolve_slot(agent, "tamanho1", "tamanho");
+      		break;
+			case "sabor2":
+          resposta = resolve_slot(agent, "sabor2", "sabor");
+					break;
+			case "tamanho2":
+          resposta = resolve_slot(agent, "tamanho2", "tamanho");
+      		break;
     }
-    const quantidade  = contexto.parameters.qtd;
-    if (quantidade === 1){
-      agent.setContext({ name: 'qtd_sabor1', lifespan: 2, parameters: { qtd: (quantidade + 1) }})
-      return "Não consegui entender, pode repetir por favor?";
-    }else {
-      return "Não temos esse sabor"
+    if (resposta !== ""){
+      agent.add(resposta)
     }
   }
 
-  function get_slot_atual(agent){
-    const contexto = agent.contexts.filter( (context) => context.name.includes('pedir_pizza_dialog_params_'))[0];
-    console.log(contexto);
-    const contexto_nome = contexto.name.split('_')[4];
-    return contexto_nome;
-  }
+	function get_slot_atual(agent){
+		const contexto = agent.contexts.filter( (context) => context.name.includes('_dialog_params_'))[0];
+		console.log("contexto" + contexto);
+		const contexto_nome = contexto.name.split('_').pop();
+		console.log("contexto nome" + contexto_nome);
+		return contexto_nome;
+	}
+
+	function resolve_slot(agent, entidade, msg, primeira_mensagem) {
+		// const primeira_mensagem = agent.getContext("primeira_mensagem")
+		const contexto = agent.getContext(entidade)
+		console.log("contexto " + JSON.stringify(contexto, null, 4));
+		const contador_entidade = entidade.concat("qtd")
+
+    if (contexto === null){
+      agent.setContext({ name: entidade, lifespan: 2, parameters: { `${contador_entidade}`: 1 }})
+      return "";
+    }
+    const quantidade  = contexto.parameters.contador_entidade;
+    if (quantidade === 1){
+      agent.setContext({ name: entidade, lifespan: 2, parameters: { contador_entidade: (quantidade + 1) }})
+      return "Não consegui entender, pode repetir por favor?";
+    }else {
+      return `Não temos esse ${msg}`
+    }
+	}
 
   // Run the proper function handler based on the matched Dialogflow intent name
   let intentMap = new Map();
-  intentMap.set('pedir pizza', comprar_pizza);
+  intentMap.set('um pedido pizza', comprar_um_pedido);
+	intentMap.set('dois pedido pizza', comprar_dois_pedidos);
   agent.handleRequest(intentMap);
 });
