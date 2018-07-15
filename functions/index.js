@@ -14,8 +14,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   const parameter = request.body.queryResult.parameters;
   const actions = request.body.queryResult.action;
   const contexts = request.body.queryResult.output_contexts;
-  console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
-  console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
+  // console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
+  // console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
   function comprar_um_pedido(agent){
     const contexto_nome = get_slot_atual(agent);
@@ -64,25 +64,28 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 	function get_slot_atual(agent){
 		const contexto = agent.contexts.filter( (context) => context.name.includes('_dialog_params_'))[0];
-		console.log("contexto" + contexto);
 		const contexto_nome = contexto.name.split('_').pop();
-		console.log("contexto nome" + contexto_nome);
 		return contexto_nome;
 	}
 
 	function resolve_slot(agent, entidade, msg, primeira_mensagem) {
 		// const primeira_mensagem = agent.getContext("primeira_mensagem")
 		const contexto = agent.getContext(entidade)
-		console.log("contexto " + JSON.stringify(contexto, null, 4));
-		const contador_entidade = entidade.concat("qtd")
-
+		// console.log("contexto " + JSON.stringify(contexto, null, 4));
+		const contador_entidade = entidade.concat("qtd");
+		let parametro = {};
     if (contexto === null){
-      agent.setContext({ name: entidade, lifespan: 2, parameters: { `${contador_entidade}`: 1 }})
-      return "";
+		parametro[contador_entidade] = 1;
+		console.log(parametro);
+		agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
+		return "";
     }
-    const quantidade  = contexto.parameters.contador_entidade;
+    const quantidade  = contexto.parameters[contador_entidade];
+	console.log("quantidade ", quantidade);
     if (quantidade === 1){
-      agent.setContext({ name: entidade, lifespan: 2, parameters: { contador_entidade: (quantidade + 1) }})
+		parametro[contador_entidade] = quantidade + 1;
+		console.log(parametro);
+      agent.setContext({ name: entidade, lifespan: 2, parameters: parametro})
       return "Não consegui entender, pode repetir por favor?";
     }else {
       return `Não temos esse ${msg}`
