@@ -37,27 +37,32 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   }
 
 	function comprar_dois_pedidos(agent){
+		console.log("entrou na funcao correta");
 	    const contexto_nome = get_slot_atual(agent);
 	    let resposta = "";
 		if (contexto_nome === "qtd1" || contexto_nome === "qtd2") {
-			agent.clearOutgoingContexts();
+			console.log("ENTROU NO LUGAR CORRETO");
+			agent.outgoingContexts_ = [];
+			agent.contexts = []
+		}else{
+			const mensagem_pedidos = set_mensagem_pedidos(agent);
+			console.log("mensagem pedidos: ",mensagem_pedidos);
+		    switch (contexto_nome) {
+				case "sabor1":
+					resposta = resolve_slot(agent, "sabor1", "sabor");
+					break;
+				case "tamanho1":
+					resposta = resolve_slot(agent, "tamanho1", "tamanho");
+					break;
+				case "sabor2":
+		        	resposta = resolve_slot(agent, "sabor2", "sabor");
+					break;
+				case "tamanho2":
+					resposta = resolve_slot(agent, "tamanho2", "tamanho");
+		      		break;
+		    }
+			agent.add(mensagem_pedidos);
 		}
-		const mensagem_pedidos = set_mensagem_pedidos(agent);
-	    switch (contexto_nome) {
-			case "sabor1":
-				resposta = resolve_slot(agent, "sabor1", "sabor");
-				break;
-			case "tamanho1":
-				resposta = resolve_slot(agent, "tamanho1", "tamanho");
-				break;
-			case "sabor2":
-	        	resposta = resolve_slot(agent, "sabor2", "sabor");
-				break;
-			case "tamanho2":
-				resposta = resolve_slot(agent, "tamanho2", "tamanho");
-	      		break;
-	    }
-		agent.add(mensagem_pedidos);
 		if (resposta !== ""){
 			agent.add(resposta);
 		}
@@ -70,7 +75,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const parametros = agent.contexts[0].parameters;
 		let lista_mensagens = [];
 		for (let i = 1; i <= 2; i++) {
-			let j = String.format(i)
+			let j = i.toString()
+			console.log(`j: ${j}`);
+			const quantidade = "qtd".concat(j)
+			console.log(`qtd: ${quantidade}`);
 			const qtd = parametros["qtd" + j]["number"];
 			if (qtd === i){
 				const msg_qtd = "uma pizza ";
@@ -78,9 +86,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				//// TODO: nao sei o que fazer aqui kkkk
 				const msg_qtd = "outras pizza ";
 			}else {
-				const msg_qtd = String.format(qtd) + " pizzas ";
+				const msg_qtd = qtd.toString() + " pizzas ";
 			}
-			let mensagem_pedido = "pedido " + j + ": " + msg_qtd;
+			let mensagem_pedido = "o " + j + "º pedido " + j + ": " + msg_qtd;
 			const sabor = parametros["sabor" + j];
 			const tamanho = parametros["tamanho" + j];
 			if (tamanho !== "") {
@@ -95,11 +103,14 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			}
 			const borda = parametros["borda" + j];
 			if (borda !== "") {
-				mensagem_pedido.concat("com borda de " + borda);
+				mensagem_pedido.concat("e borda de " + borda);
 			}
 			lista_mensagens.push(mensagem_pedido);
 		}
-		return (lista_mensagens[0] + " e o " + lista_mensagens[1]);
+		console.log(lista_mensagens);
+		const mensagem_final = "Indentifiquei 2 pedidos: " + lista_mensagens[0] + " e o " + lista_mensagens[1]
+		console.log(mensagem_final);
+		return (mensagem_final);
 	}
 
 	function get_slot_atual(agent){
@@ -112,7 +123,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		// const primeira_mensagem = agent.getContext("primeira_mensagem")
 		const contexto = agent.getContext(entidade);
 		// console.log("contexto " + JSON.stringify(contexto, null, 4));
-		console.log(agent.contexts[0].parameters);
+		// console.log(agent.contexts[0].parameters);
 		const contador_entidade = entidade.concat("qtd");
 		let parametro = {};
 	    if (contexto === null){
@@ -135,6 +146,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	// Run the proper function handler based on the matched Dialogflow intent name
 	let intentMap = new Map();
 	intentMap.set('um pedido pizza', comprar_um_pedido);
-	intentMap.set('dois pedido pizza', comprar_dois_pedidos);
+	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
 	agent.handleRequest(intentMap);
 });
