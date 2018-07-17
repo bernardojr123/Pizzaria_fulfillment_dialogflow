@@ -1,0 +1,114 @@
+{
+	"pizzas" : {
+		"Calabresa" : 	{
+			"tamanho":{
+				"Pequena" : 10,
+				"Média" : 20,
+				"Grande" : 30
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+
+		"Mussarela" : 	{
+			"tamanho" : {
+				"Pequena" : 10,
+				"Média" : 20,
+				"Grande" : 30
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Portuguesa" : 	{
+			"tamanho":{
+				"Pequena" : 10,
+				"Média" : 20,
+				"Grande" : 30
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Frango" : 	{
+			"tamanho":{
+				"Pequena" : 10,
+				"Média" : 20,
+				"Grande" : 30
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Abobrinha" : 	{
+			"tamanho":{
+				"Pequena" : 10,
+				"Média" : 20,
+				"Grande" : 30
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Catupiry" : 	{
+			"tamanho":{
+				"Pequena" : 15,
+				"Média" : 25,
+				"Grande" : 35
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		}
+
+	},
+
+	"borda" : {
+		"Cheddar" : {
+			"tamanho" : {
+				"Pequena" : 3,
+				"Média": 5,
+				"Grande" : 8
+			}
+		},
+
+		"Catupiry" : {
+			"tamanho" : {
+				"Pequena" : 3,
+				"Média": 5,
+				"Grande" : 8
+			}
+		}
+	},
+
+	"refrigerante" : {
+		"Coca-cola" : {
+			"tamanho" : {
+				"300" : 4,
+				"500" : 7
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Fanta" : {
+			"tamanho" : {
+				"300" : 4,
+				"500" : 7
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"Antartica" : {
+			"tamanho" : {
+				"300" : 4,
+				"500" : 7
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		},
+		"nenhuma" : {
+			"tamanho" : {
+				"300" : 4,
+				"500" : 7
+			},
+			"imgURL" : "",
+			"descricao" : ""
+		}
+	}
+}
+	

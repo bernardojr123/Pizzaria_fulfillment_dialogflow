@@ -5,6 +5,7 @@
 const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
+const cardapio = require('./cardapio.json');
 
 process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
 
@@ -25,8 +26,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 						agent.clearOutgoingContexts();
 						break;
 				case "sabor1":
-	          resposta = resolve_slot(agent, "sabor1", "sabor");
-						break;
+	          		resposta = resolve_slot(agent, "sabor1", "sabor");
+
+					break;
 				case "tamanho1":
 	          resposta = resolve_slot(agent, "tamanho1", "tamanho");
 	      		break;
@@ -114,9 +116,20 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	}
 
 	function get_slot_atual(agent){
-		const contexto = agent.contexts.filter( (context) => context.name.includes('_dialog_params_'))[0];
-		const contexto_nome = contexto.name.split('_').pop();
-		return contexto_nome;
+		try {
+			const contexto = agent.contexts.filter( (context) => context.name.includes('_dialog_params_'))[0];
+			console.log('contexto get slot atual ' + JSON.stringify(contexto));
+			const contexto_nome = contexto.name.split('_').pop();
+			return contexto_nome;
+		} catch(e) {
+			// statements
+			console.log('catch erroor ');
+			//console.log(e);
+			return '';
+
+		}
+
+
 	}
 
 	function resolve_slot(agent, entidade, msg, primeira_mensagem) {
@@ -143,9 +156,46 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	    }
 	}
 
+	function calcular_conta (agent) {
+		
+		const pizzacomprada = agent.contexts.filter( (context) => context.name.includes('pizzacomprada'))[0];
+		const itens = pizzacomprada.parameters;
+		var valorBorda = 0;
+
+// debugger section
+		console.log('cardapio >> '+ JSON.stringify(cardapio.pizzas));
+		console.log('itens >> ' + JSON.stringify(itens));
+
+////
+		//recuperando os valores 
+		const valorPizza = cardapio.pizzas[itens.sabor1].tamanho[itens.tamanho1];
+		try {
+			valorBorda = cardapio.borda[itens.borda1].tamanho[itens.tamanho1];
+		} catch(e) {
+			valorBorda = 0;
+			console.log('não identificamos nenhuma borda');
+			//console.log(e);
+		}
+		
+		console.log('Valor --> ' + valorPizza );
+		console.log('Borda --> '+ valorBorda);
+
+		var valorTotal = itens.qtd1["number"]*(valorPizza + valorBorda); 
+
+		agent.add(`Sua pizza ${itens.tamanho1} de ${itens.sabor1} no valor de ${valorTotal} está sendo processada`);
+		//agent.add("Se quiser fazer outro pedido fique a vontade ");
+		
+		
+	}
+
+	function mostrar_cardapio (argument) {
+		
+	}
+
 	// Run the proper function handler based on the matched Dialogflow intent name
 	let intentMap = new Map();
 	intentMap.set('um pedido pizza', comprar_um_pedido);
 	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
+	intentMap.set('Finalizar pedido sem refrigerante', calcular_conta);
 	agent.handleRequest(intentMap);
 });
