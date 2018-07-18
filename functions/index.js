@@ -6,6 +6,7 @@ const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
 const cardapio = require('./cardapio.json');
+const perguntas_slot = require('./perguntas_slot.json');
 
 process.env.DEBUG = 'dialogflow:debug'; // enables lib debugging statements
 
@@ -27,10 +28,10 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 						agent.clearOutgoingContexts();
 						break;
 				case "sabor1":
-	        resposta = resolve_slot(agent, "sabor1", "sabor");
+	        resposta = resolve_slot(agent, "sabor1", false);
 					break;
 				case "tamanho1":
-	          resposta = resolve_slot(agent, "tamanho1", "tamanho");
+	          resposta = resolve_slot(agent, "tamanho1", false);
 	      		break;
 	    }
 			//let itens = get_lista_pedidos(agent,1);
@@ -62,16 +63,16 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		}
     switch (contexto_nome) {
 			case "sabor1":
-				resposta = resolve_slot(agent, "sabor1", "sabor");
+				resposta = resolve_slot(agent, "sabor1",  true);
 				break;
 			case "tamanho1":
-				resposta = resolve_slot(agent, "tamanho1", "tamanho");
+				resposta = resolve_slot(agent, "tamanho1", true);
 				break;
 			case "sabor2":
-	      resposta = resolve_slot(agent, "sabor2", "sabor");
+	      resposta = resolve_slot(agent, "sabor2", true);
 				break;
 			case "tamanho2":
-				resposta = resolve_slot(agent, "tamanho2", "tamanho");
+				resposta = resolve_slot(agent, "tamanho2", true);
       	break;
     }
 		const required_params = queryResult.allRequiredParamsPresent;
@@ -145,7 +146,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				const borda = item.borda;
 				mensagem = mensagem.concat(` e borda ${borda}`)
 			}
-			mensagens.push(mensagem + )
+			mensagens.push(mensagem)
 		})
 		const mensagem_final = "Indentifiquei 2 pedidos: " + mensagens[0] + " e o " + mensagens[1] + "."
 		return mensagem_final;
@@ -168,7 +169,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 	}
 
-	function resolve_slot(agent, entidade, msg) {
+	function resolve_slot(agent, entidade, multiplos_pedidos = false) {
 		const contexto = agent.getContext(entidade);
 		const contador_entidade = entidade.concat("qtd");
 		let parametro = {};
@@ -176,6 +177,16 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			parametro[contador_entidade] = 1;
 			// console.log(parametro);
 			agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
+			let dicionario = {};
+			if (multiplos_pedidos) {
+				dicionario = perguntas_slot["multiplos pedidos"];
+				console.log("dicionario" + dicionario);
+			}else {
+				dicionario = perguntas_slot["um pedido"];
+				console.log("dicionario" + dicionario);
+			}
+			const message = dicionario[entidade];
+			agent.add(message);
 			return "";
     }
     const quantidade  = contexto.parameters[contador_entidade];
@@ -185,7 +196,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     	agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
     	return "Não consegui entender, pode repetir por favor?";
     }else {
-    	return `Não temos esse ${msg}`;
+    	return `Não temos esse ${entidade.slice(0,-1)}`;
     }
 	}
 

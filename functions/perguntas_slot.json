@@ -1,0 +1,13 @@
+{
+    "um pedido":{
+      "tamanho1": "E o sabor da pizza, vai de que?",
+      "sabor1": "Grande, média ou pequena?"
+    },
+    "multiplos pedidos":{
+      "tamanho1": "Qual o tamanho da(s) pizza(s) do seu primeiro pedido?",
+      "sabor1": "E o sabor do primeiro pedido?",
+      "tamanho2": "Só falta o segundo pedido, qual o tamanho?",
+      "sabor2": "Qual o sabor do seu segundo pedido?"
+    }
+
+}
