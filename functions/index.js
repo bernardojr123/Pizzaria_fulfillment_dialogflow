@@ -37,7 +37,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			//let itens = get_lista_pedidos(agent,1);
 			//console.log(JSON.stringify(itens));
 			//const total = calcular_conta(itens);
-	    if (resposta !== ""){
+			const required_params = queryResult.allRequiredParamsPresent;
+			if (required_params === true) {
+				// const itens = get_lista_pedidos(agent,1);
+				// const total = calcular_conta(itens);
+				const parametros = {"quantidade_pedidos": 1}
+				agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+			}
+
+			if (resposta !== ""){
 	    	agent.add(resposta);
 	    }
   }
@@ -51,6 +59,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		if (contexto_nome === "qtd1" || contexto_nome === "qtd2") {
 			agent.outgoingContexts_ = [];
 			agent.contexts = []
+			agent.clearOutgoingContexts();
 			agent.add("")
 			return;
 		}
@@ -77,14 +86,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     }
 		const required_params = queryResult.allRequiredParamsPresent;
 		if (required_params === true) {
-			const total = calcular_conta(itens);
+			// const total = calcular_conta(itens);
+			const parametros = {"quantidade_pedidos": 2}
+			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
 		}
 
 		if (resposta !== ""){
 			agent.add(resposta);
 		}
 	}
-
 
 	function get_lista_pedidos(agent, qtd_pedidos){
 		const parametros = agent.contexts[0].parameters;
@@ -158,15 +168,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			// console.log('contexto get slot atual ' + JSON.stringify(contexto));
 			const contexto_nome = contexto.name.split('_').pop();
 			return contexto_nome;
-		} catch(e) {
-			// statements
-			console.log('catch erroor ');
-			//console.log(e);
-			return '';
-
+		} catch (e) {
+			console.log("contexto de slot ainda inexistente");
 		}
-
-
 	}
 
 	function resolve_slot(agent, entidade, multiplos_pedidos = false) {
@@ -203,7 +207,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	function calcular_conta (itens) {
 		let valorTotal = 0;
 		let pizzas_total = 0
-
 		itens.forEach( function(pedido) {
 				let valorBorda = 0;
 				// console.log(`pedido: ${JSON.stringify(pedido)}`);
@@ -227,7 +230,17 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				console.log("Pizza "+valorPizza);
 
 		});
+
 		console.log("Valor Total .. " + valorTotal);
+		return valorTotal;
+	}
+
+	function finalizar_pedido(agent){
+		const parametros = agent.contexts[0].parameters;
+		const quantidade_pedidos = parametros["quantidade_pedidos"]
+		const itens = get_lista_pedidos(agent, quantidade_pedidos);
+		const valorTotal = calcular_conta(itens);
+		agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
 
 	}
 
@@ -239,6 +252,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	let intentMap = new Map();
 	intentMap.set('um pedido pizza', comprar_um_pedido);
 	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
-	//intentMap.set('Finalizar pedido sem refrigerante', calcular_conta);
+	intentMap.set('Finalizar pedido sem refrigerante', finalizar_pedido);
 	agent.handleRequest(intentMap);
 });
