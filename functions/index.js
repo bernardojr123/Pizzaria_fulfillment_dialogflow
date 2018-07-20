@@ -87,8 +87,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const required_params = queryResult.allRequiredParamsPresent;
 		if (required_params === true) {
 			// const total = calcular_conta(itens);
+
 			const parametros = {"quantidade_pedidos": 2}
-			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+			agent.setContext({ name: "pizzaComprada", lifespan: 5, parameters: parameter});
+			//agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+
 		}
 
 		if (resposta !== ""){
@@ -102,6 +105,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		for (let i = 1; i <= qtd_pedidos; i++) {
 			let pedido = {};
 			let j = i.toString()
+			console.log("parametros " + JSON.stringify(parametros));
 			const qtd = parametros["qtd" + j]["number"];
 			const sabor = parametros["sabor" + j];
 			const tamanho = parametros["tamanho" + j];
@@ -200,7 +204,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     	agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
     	return "Não consegui entender, pode repetir por favor?";
     }else {
-    	return `Não temos esse ${entidade.slice(0,-1)}`;
+    	return `Não temos esse(a) ${entidade.slice(0,-1)}`;
     }
 	}
 
@@ -237,6 +241,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 	function finalizar_pedido(agent){
 		const parametros = agent.contexts[0].parameters;
+		console.log("finalizar_pedido...");
 		const quantidade_pedidos = parametros["quantidade_pedidos"]
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
 		const valorTotal = calcular_conta(itens);
@@ -248,10 +253,37 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 	}
 
+	function comprar_refri(agent) {
+		const contexto_nome = get_slot_atual(agent);
+		let resposta = "";
+		switch (contexto_nome) {
+			case "refrigerante1":
+				resposta = resolve_slot(agent, "refrigerante1", false);
+				break;
+			case "tamanhoR":
+				resposta = resolve_slot(agent, "tamanhoR", false);
+				break;
+			case "quantidade1":
+					resposta = resolve_slot(agent, "quantidade1", false);
+					break;
+		}
+		const required_params = queryResult.allRequiredParamsPresent;
+		if (required_params === true) {
+			console.log("parametros: "+JSON.stringify(parameter));
+			const parametros = {"quantidade_pedidos": 1}
+			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+		}
+
+
+		if (resposta !== ""){
+			agent.add(resposta);
+		}
+	}
 	// Run the proper function handler based on the matched Dialogflow intent name
 	let intentMap = new Map();
 	intentMap.set('um pedido pizza', comprar_um_pedido);
 	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
 	intentMap.set('Finalizar pedido sem refrigerante', finalizar_pedido);
+	intentMap.set('compra refrigerante', comprar_refri);
 	agent.handleRequest(intentMap);
 });

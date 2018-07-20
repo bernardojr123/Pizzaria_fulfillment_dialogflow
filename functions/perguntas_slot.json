@@ -1,7 +1,10 @@
 {
     "um pedido":{
       "tamanho1": "Grande, média ou pequena?",
-      "sabor1": "E o sabor da pizza, vai de que?"
+      "sabor1": "E o sabor da pizza, vai de que?",
+      "refrigerante1":"Temos Coca-cola, Kuat, Fanta e Antártica, vai de qual?",
+      "tamanhoR":"Qual o tamanho do seu refrigerante?",
+      "quantidade1":"Quantos vai querer?"
     },
     "multiplos pedidos":{
       "tamanho1": "Qual o tamanho da(s) pizza(s) do seu primeiro pedido?",
