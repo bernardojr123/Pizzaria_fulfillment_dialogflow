@@ -20,79 +20,127 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	// console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
 	// console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
+
+	/**
+	*	Função chamada quando o dialogflow recebe a intenção "um pedido pizza", para construir toda a logica para criar um pedido e responder para o usuário.
+	* @param {object} agent objeto agent enviado pelo dialogflow com todos as informações do dialogo
+	**/
 	function comprar_um_pedido(agent){
-	    const contexto_nome = get_slot_atual(agent);
-	    let resposta = "";
-	    switch (contexto_nome) {
-				case "qtd1":
-						agent.clearOutgoingContexts();
-						break;
-				case "sabor1":
-	        resposta = resolve_slot(agent, "sabor1", false);
-					break;
-				case "tamanho1":
-	          resposta = resolve_slot(agent, "tamanho1", false);
-	      		break;
-	    }
-			//let itens = get_lista_pedidos(agent,1);
-			//console.log(JSON.stringify(itens));
-			//const total = calcular_conta(itens);
-			const required_params = queryResult.allRequiredParamsPresent;
-			if (required_params === true) {
-				// const itens = get_lista_pedidos(agent,1);
-				// const total = calcular_conta(itens);
-				const parametros = {"quantidade_pedidos": 1}
-				agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
-			}
-
-			if (resposta !== ""){
-	    	agent.add(resposta);
-	    }
-  }
-
-	function comprar_dois_pedidos(agent){
-		const contador_entidade = agent.getContext("primeiro_acesso_intencao");
-		console.log("intecao "+ contador_entidade);
-	  const contexto_nome = get_slot_atual(agent);
-		console.log("nomes do contexto " + contexto_nome);
-	  let resposta = "";
-		if (contexto_nome === "qtd1" || contexto_nome === "qtd2") {
-			agent.outgoingContexts_ = [];
-			agent.contexts = []
-			agent.clearOutgoingContexts();
-			agent.add("")
-			return;
-		}
-		const itens = get_lista_pedidos(agent,2);
-		console.log("mensagem pedidos: ",itens);
-		if (contador_entidade === null) {
-			agent.setContext({ name: "primeiro_acesso_intencao", lifespan: 2});
-			const message = get_message(itens)
-			agent.add(message)
-		}
-    switch (contexto_nome) {
-			case "sabor1":
-				resposta = resolve_slot(agent, "sabor1",  true);
-				break;
-			case "tamanho1":
-				resposta = resolve_slot(agent, "tamanho1", true);
-				break;
-			case "sabor2":
-	      resposta = resolve_slot(agent, "sabor2", true);
-				break;
-			case "tamanho2":
-				resposta = resolve_slot(agent, "tamanho2", true);
-      	break;
-    }
-		const required_params = queryResult.allRequiredParamsPresent;
-		if (required_params === true) {
-			// const total = calcular_conta(itens);
-			const parametros = {"quantidade_pedidos": 2}
+		const slot_atual = get_slot_atual(agent);
+		const mensagem_slot = montar_mensagem_slot(agent, slot_atual,1);
+		const slots_preenchidos = queryResult.allRequiredParamsPresent;
+		if (slots_preenchidos) {
+			const parametros = {"quantidade_pedidos": 1}
+			console.log("comprando uma pizza");
 			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
 		}
+		if (mensagem_slot !== ""){
+			agent.add(mensagem_slot);
+		}
+	}
 
-		if (resposta !== ""){
-			agent.add(resposta);
+	/**
+	*	Recebe o slot atual e monta a mensagem dependendo da quantidade de vezes
+	* em que o slot foi chamado.
+	* @param {string} slot_atual nome do slot a ser tratado
+	* @param {string} quantidade_pedidos nome do slot a ser tratado
+  * @return {string} resposta resposta a ser enviada para o dialogflow
+	**/
+	function montar_mensagem_slot(agent, slot_atual, quantidade_pedidos){
+		console.log("quantidade de pedidos: "+quantidade_pedidos);
+		let resposta = ""
+		switch (slot_atual) {
+			case "sabor1":
+		  	resposta = resolve_slot(agent, "sabor1", quantidade_pedidos);
+				break;
+			case "tamanho1":
+		  	resposta = resolve_slot(agent, "tamanho1", quantidade_pedidos);
+		    break;
+			case "sabor2":
+	      resposta = resolve_slot(agent, "sabor2", quantidade_pedidos);
+				break;
+			case "tamanho2":
+				resposta = resolve_slot(agent, "tamanho2", quantidade_pedidos);
+      	break;
+		}
+		return resposta;
+	}
+
+	// function comprar_dois_pedidos(agent){
+	// 	const contador_entidade = agent.getContext("primeiro_acesso_intencao");
+	// 	console.log("intecao "+ contador_entidade);
+	// 	if (contador_entidade === null) {
+	// 		agent.setContext({ name: "primeiro_acesso_intencao", lifespan: 2});
+	// 		const message = get_message(itens)
+	// 		agent.add(message)
+	// 	}
+	//
+	//   const contexto_nome = get_slot_atual(agent);
+	// 	console.log("nomes do contexto " + contexto_nome);
+	//   let resposta = "";
+	// 	if (contexto_nome === "qtd1" || contexto_nome === "qtd2") {
+	// 		agent.outgoingContexts_ = [];
+	// 		agent.contexts = []
+	// 		agent.clearOutgoingContexts();
+	// 		agent.add("")
+	// 		return;
+	// 	}
+	// 	const itens = get_lista_pedidos(agent,2);
+	// 	console.log("mensagem pedidos: ",itens);
+  //   switch (contexto_nome) {
+	// 		case "sabor1":
+	// 			resposta = resolve_slot(agent, "sabor1",  true);
+	// 			break;
+	// 		case "tamanho1":
+	// 			resposta = resolve_slot(agent, "tamanho1", true);
+	// 			break;
+	// 		case "sabor2":
+	//       resposta = resolve_slot(agent, "sabor2", true);
+	// 			break;
+	// 		case "tamanho2":
+	// 			resposta = resolve_slot(agent, "tamanho2", true);
+  //     	break;
+  //   }
+	// 	const required_params = queryResult.allRequiredParamsPresent;
+	// 	if (required_params === true) {
+	// 		// const total = calcular_conta(itens);
+	// 		const parametros = {"quantidade_pedidos": 2}
+	// 		agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+	// 	}
+	//
+	// 	if (resposta !== ""){
+	// 		agent.add(resposta);
+	// 	}
+	// }
+
+	function get_msg_primeiro_acesso(agent, quantidade_pedidos) {
+		const primeiro_acesso = agent.getContext("primeiro_acesso_intencao");
+		console.log("intecao "+ contador_entidade);
+		let resposta = "";
+		if (primeiro_acesso === null) {
+			agent.setContext({ name: "primeiro_acesso_intencao", lifespan: 2});
+			const itens = get_lista_pedidos(agent, quantidade_pedidos);
+			const resposta = get_message(itens)
+		}
+		return resposta;
+	}
+
+	function comprar_dois_pedidos(agent){
+		const mensagem_p_acesso = get_msg_primeiro_acesso(agent, 2)
+		if (mensagem_p_acesso !== ""){
+			agent.add(message)
+		}
+		const slot_atual = get_slot_atual(agent);
+		const mensagem_slot = montar_mensagem_slot(agent, slot_atual,2);
+		console.log(mensagem_slot);
+		const slots_preenchidos = queryResult.allRequiredParamsPresent;
+		if (slots_preenchidos) {
+			const parametros = {"quantidade_pedidos": 2}
+			console.log("comprando duas pizza");
+			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
+		}
+		if (mensagem_slot !== ""){
+			agent.add(mensagem_slot);
 		}
 	}
 
@@ -173,30 +221,58 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		}
 	}
 
-	function resolve_slot(agent, entidade, multiplos_pedidos = false) {
+	// function resolve_slot(agent, entidade, multiplos_pedidos = false) {
+	// 	const contexto = agent.getContext(entidade);
+	// 	const contador_entidade = entidade.concat("qtd");
+	// 	let parametro = {};
+  //   if (contexto === null){
+	// 		parametro[contador_entidade] = 1;
+	// 		// console.log(parametro);
+	// 		agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
+	// 		let dicionario = {};
+	// 		if (multiplos_pedidos) {
+	// 			dicionario = perguntas_slot["multiplos pedidos"];
+	// 			console.log("dicionario" + dicionario);
+	// 		}else {
+	// 			dicionario = perguntas_slot["um pedido"];
+	// 			console.log("dicionario" + dicionario);
+	// 		}
+	// 		const message = dicionario[entidade];
+	// 		agent.add(message);
+	// 		return "";
+  //   }
+  //   const quantidade  = contexto.parameters[contador_entidade];
+  //   if (quantidade === 1){
+	// 		parametro[contador_entidade] = quantidade + 1;
+	// 		// console.log(parametro);
+  //   	agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
+  //   	return "Não consegui entender, pode repetir por favor?";
+  //   }else {
+  //   	return `Não temos esse ${entidade.slice(0,-1)}`;
+  //   }
+	// }
+
+	function resolve_slot(agent, entidade, quantidade_pedidos) {
 		const contexto = agent.getContext(entidade);
 		const contador_entidade = entidade.concat("qtd");
 		let parametro = {};
     if (contexto === null){
 			parametro[contador_entidade] = 1;
-			// console.log(parametro);
 			agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
 			let dicionario = {};
-			if (multiplos_pedidos) {
-				dicionario = perguntas_slot["multiplos pedidos"];
+			if (quantidade_pedidos === 1) {
+				dicionario = perguntas_slot["um pedido"];
 				console.log("dicionario" + dicionario);
 			}else {
-				dicionario = perguntas_slot["um pedido"];
+				dicionario = perguntas_slot["multiplos pedidos"];
 				console.log("dicionario" + dicionario);
 			}
 			const message = dicionario[entidade];
-			agent.add(message);
-			return "";
+			return message;
     }
     const quantidade  = contexto.parameters[contador_entidade];
     if (quantidade === 1){
 			parametro[contador_entidade] = quantidade + 1;
-			// console.log(parametro);
     	agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
     	return "Não consegui entender, pode repetir por favor?";
     }else {
@@ -239,6 +315,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const parametros = agent.contexts[0].parameters;
 		const quantidade_pedidos = parametros["quantidade_pedidos"]
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
+		console.log(itens);
 		const valorTotal = calcular_conta(itens);
 		agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
 

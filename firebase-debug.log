@@ -1,0 +1,197 @@
+[debug] [2018-07-20T21:50:35.189Z] ----------------------------------------------------------------------
+[debug] [2018-07-20T21:50:35.198Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\delan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-07-20T21:50:35.200Z] CLI Version:   3.19.3
+[debug] [2018-07-20T21:50:35.200Z] Platform:      win32
+[debug] [2018-07-20T21:50:35.200Z] Node Version:  v8.11.1
+[debug] [2018-07-20T21:50:35.209Z] Time:          Fri Jul 20 2018 18:50:35 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:50:35.210Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-20T21:50:35.381Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-20T21:50:35.383Z] > authorizing via signed-in user
+[debug] [2018-07-20T21:50:35.398Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-07-20T21:50:35.400Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/NbIazkw2FILa-nJTjinrFfN19e8XHUSaeuMeK9csJUo',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Fri Jul 20 2018 18:50:35 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:50:36.852Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-20T21:50:37.390Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pedindo-pizza  
+  
+ Fri Jul 20 2018 18:50:37 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:50:39.098Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-20T21:50:39.100Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pedindo-pizza/tokens  
+  
+ Fri Jul 20 2018 18:50:39 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:50:40.101Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-20T21:50:40.105Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/pedindo-pizza  
+  
+ Fri Jul 20 2018 18:50:40 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:50:41.708Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Projetos\webhook\Pizzaria_fulfillment_dialogflow'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-07-20T21:51:03.215Z] Fetching environment
+[debug] [2018-07-20T21:51:03.258Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/872459468533:getServerAppConfig  
+  
+ Fri Jul 20 2018 18:51:03 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-20T21:51:04.535Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-20T21:51:04.536Z] Starting @google-cloud/functions-emulator
+[debug] [2018-07-20T21:51:16.876Z] Parsing function triggers
+[info] +  functions: dialogflowFirebaseFulfillment: http://localhost:5000/pedindo-pizza/us-central1/dialogflowFirebaseFulfillment
+[debug] [2018-07-23T18:40:57.278Z] ----------------------------------------------------------------------
+[debug] [2018-07-23T18:40:57.281Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\delan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-07-23T18:40:57.282Z] CLI Version:   3.19.3
+[debug] [2018-07-23T18:40:57.282Z] Platform:      win32
+[debug] [2018-07-23T18:40:57.282Z] Node Version:  v8.11.1
+[debug] [2018-07-23T18:40:57.283Z] Time:          Mon Jul 23 2018 15:40:57 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:40:57.283Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-23T18:40:57.453Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-23T18:40:57.454Z] > authorizing via signed-in user
+[debug] [2018-07-23T18:40:57.459Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-07-23T18:40:57.460Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/NbIazkw2FILa-nJTjinrFfN19e8XHUSaeuMeK9csJUo',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Mon Jul 23 2018 15:40:57 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:40:58.161Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T18:40:58.587Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 15:40:58 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:40:59.703Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T18:40:59.704Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pedindo-pizza/tokens  
+  
+ Mon Jul 23 2018 15:40:59 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:41:00.613Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T18:41:00.614Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 15:41:00 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:41:02.303Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Projetos\webhook\Pizzaria_fulfillment_dialogflow'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-07-23T18:41:12.002Z] Fetching environment
+[debug] [2018-07-23T18:41:12.083Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/872459468533:getServerAppConfig  
+  
+ Mon Jul 23 2018 15:41:12 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T18:41:13.057Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T18:41:13.057Z] Starting @google-cloud/functions-emulator
+[debug] [2018-07-23T18:41:19.709Z] Parsing function triggers
+[info] +  functions: dialogflowFirebaseFulfillment: http://localhost:5000/pedindo-pizza/us-central1/dialogflowFirebaseFulfillment
+[debug] [2018-07-23T19:17:04.176Z] ----------------------------------------------------------------------
+[debug] [2018-07-23T19:17:04.186Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\delan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-07-23T19:17:04.187Z] CLI Version:   3.19.3
+[debug] [2018-07-23T19:17:04.187Z] Platform:      win32
+[debug] [2018-07-23T19:17:04.187Z] Node Version:  v8.11.1
+[debug] [2018-07-23T19:17:04.190Z] Time:          Mon Jul 23 2018 16:17:04 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T19:17:04.190Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-23T19:17:04.233Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-23T19:17:04.234Z] > authorizing via signed-in user
+[debug] [2018-07-23T19:17:04.243Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 16:17:04 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T19:17:05.740Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T19:17:05.743Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pedindo-pizza/tokens  
+  
+ Mon Jul 23 2018 16:17:05 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T19:17:06.710Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T19:17:06.711Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 16:17:06 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T19:17:08.455Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Projetos\webhook\Pizzaria_fulfillment_dialogflow'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-07-23T19:17:09.868Z] Fetching environment
+[debug] [2018-07-23T19:17:09.871Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/872459468533:getServerAppConfig  
+  
+ Mon Jul 23 2018 16:17:09 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T19:17:10.881Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T19:17:10.882Z] Starting @google-cloud/functions-emulator
+[debug] [2018-07-23T19:17:15.110Z] Parsing function triggers
+[info] +  functions: dialogflowFirebaseFulfillment: http://localhost:5000/pedindo-pizza/us-central1/dialogflowFirebaseFulfillment
+[debug] [2018-07-23T21:27:00.230Z] ----------------------------------------------------------------------
+[debug] [2018-07-23T21:27:00.234Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\delan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-07-23T21:27:00.234Z] CLI Version:   3.19.3
+[debug] [2018-07-23T21:27:00.234Z] Platform:      win32
+[debug] [2018-07-23T21:27:00.234Z] Node Version:  v8.11.1
+[debug] [2018-07-23T21:27:00.235Z] Time:          Mon Jul 23 2018 18:27:00 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:00.235Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-23T21:27:00.253Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-23T21:27:00.254Z] > authorizing via signed-in user
+[debug] [2018-07-23T21:27:00.257Z] > refreshing access token with scopes: ["email","https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","openid"]
+[debug] [2018-07-23T21:27:00.258Z] >>> HTTP REQUEST POST https://www.googleapis.com/oauth2/v3/token  
+ { refresh_token: '1/NbIazkw2FILa-nJTjinrFfN19e8XHUSaeuMeK9csJUo',
+  client_id: '563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com',
+  client_secret: 'j9iVZfS8kkCEFUPaAeJV0sAi',
+  grant_type: 'refresh_token',
+  scope: 'email https://www.googleapis.com/auth/cloud-platform https://www.googleapis.com/auth/cloudplatformprojects.readonly https://www.googleapis.com/auth/firebase openid' } 
+ Mon Jul 23 2018 18:27:00 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:01.013Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:27:01.059Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 18:27:01 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:02.297Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:27:02.298Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pedindo-pizza/tokens  
+  
+ Mon Jul 23 2018 18:27:02 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:03.210Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:27:03.214Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 18:27:03 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:04.905Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Projetos\webhook\Pizzaria_fulfillment_dialogflow'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-07-23T21:27:07.860Z] Fetching environment
+[debug] [2018-07-23T21:27:07.878Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/872459468533:getServerAppConfig  
+  
+ Mon Jul 23 2018 18:27:07 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:27:08.979Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:27:08.981Z] Starting @google-cloud/functions-emulator
+[debug] [2018-07-23T21:27:19.279Z] Parsing function triggers
+[info] +  functions: dialogflowFirebaseFulfillment: http://localhost:5000/pedindo-pizza/us-central1/dialogflowFirebaseFulfillment
+[debug] [2018-07-23T21:30:38.875Z] ----------------------------------------------------------------------
+[debug] [2018-07-23T21:30:38.888Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\delan\AppData\Roaming\npm\node_modules\firebase-tools\bin\firebase serve
+[debug] [2018-07-23T21:30:38.889Z] CLI Version:   3.19.3
+[debug] [2018-07-23T21:30:38.889Z] Platform:      win32
+[debug] [2018-07-23T21:30:38.889Z] Node Version:  v8.11.1
+[debug] [2018-07-23T21:30:38.893Z] Time:          Mon Jul 23 2018 18:30:38 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:30:38.894Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2018-07-23T21:30:38.944Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2018-07-23T21:30:38.946Z] > authorizing via signed-in user
+[debug] [2018-07-23T21:30:38.955Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 18:30:38 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:30:40.116Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:30:40.118Z] >>> HTTP REQUEST GET https://admin.firebase.com/v1/database/pedindo-pizza/tokens  
+  
+ Mon Jul 23 2018 18:30:40 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:30:41.008Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:30:41.012Z] >>> HTTP REQUEST GET https://cloudresourcemanager.googleapis.com/v1/projects/pedindo-pizza  
+  
+ Mon Jul 23 2018 18:30:41 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:30:42.518Z] <<< HTTP RESPONSE 200
+[info] 
+[info] === Serving from 'E:\Projetos\webhook\Pizzaria_fulfillment_dialogflow'...
+[info] 
+[info] i  functions: Preparing to emulate functions.
+[debug] [2018-07-23T21:30:43.900Z] Fetching environment
+[debug] [2018-07-23T21:30:43.903Z] >>> HTTP REQUEST GET https://mobilesdk-pa.googleapis.com/v1/projects/872459468533:getServerAppConfig  
+  
+ Mon Jul 23 2018 18:30:43 GMT-0300 (Hora oficial do Brasil)
+[debug] [2018-07-23T21:30:44.803Z] <<< HTTP RESPONSE 200
+[debug] [2018-07-23T21:30:44.804Z] Starting @google-cloud/functions-emulator
+[debug] [2018-07-23T21:30:51.009Z] Parsing function triggers
+[info] +  functions: dialogflowFirebaseFulfillment: http://localhost:5000/pedindo-pizza/us-central1/dialogflowFirebaseFulfillment
