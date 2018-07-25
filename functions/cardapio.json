@@ -79,32 +79,40 @@
 	"refrigerante" : {
 		"Coca-cola" : {
 			"tamanho" : {
-				"300" : 4,
-				"500" : 7
+				"300ML" : 3.5,
+				"500ML" : 6,
+				"1L" : 15,
+				"2L" : 50
 			},
 			"imgURL" : "",
 			"descricao" : ""
 		},
 		"Fanta" : {
 			"tamanho" : {
-				"300" : 4,
-				"500" : 7
+				"300ML" : 3.5,
+				"500ML" : 6,
+				"1L" : 15,
+				"2L" : 50
 			},
 			"imgURL" : "",
 			"descricao" : ""
 		},
 		"Antartica" : {
 			"tamanho" : {
-				"300" : 4,
-				"500" : 7
+				"300ML" : 3.5,
+				"500ML" : 6,
+				"1L" : 15,
+				"2L" : 50
 			},
 			"imgURL" : "",
 			"descricao" : ""
 		},
 		"nenhuma" : {
 			"tamanho" : {
-				"300" : 4,
-				"500" : 7
+				"300ML" : 3.5,
+				"500ML" : 6,
+				"1L" : 15,
+				"2L" : 50
 			},
 			"imgURL" : "",
 			"descricao" : ""
