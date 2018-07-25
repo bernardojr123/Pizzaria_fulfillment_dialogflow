@@ -16,7 +16,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	const queryResult = request.body.queryResult;
 	const parameter = request.body.queryResult.parameters;
 	const actions = request.body.queryResult.action;
-	const contexts = request.body.queryResult.output_contexts;
+	const contexts = request.body.queryResult.outputContexts;
+	console.log("Contexts : >>>> " + JSON.stringify(contexts));
 	// console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
 	// console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
@@ -96,8 +97,44 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		}
 	}
 
+	function comprar_refri(agent) {
+		const contexto_nome = get_slot_atual(agent);
+		let resposta = "";
+		switch (contexto_nome) {
+			case "refrigerante1":
+				resposta = resolve_slot(agent, "refrigerante1", 1);
+				break;
+			case "tamanhoR1":
+				resposta = resolve_slot(agent, "tamanhoR", 1);
+				break;
+			case "quantidade1":
+					resposta = resolve_slot(agent, "quantidade1", 1);
+					break;
+		}
+		if (resposta !== ""){
+			agent.add(resposta);
+		}
+		const required_params = queryResult.allRequiredParamsPresent;
+		if (required_params === true) {
+
+			const quantidade_pedidos = contexts[0].parameters.quantidade_pedidos;
+			console.log("numero de pedidos para comprar refri " + quantidade_pedidos);
+			const itens = get_lista_pedidos(agent, quantidade_pedidos);
+			console.log("itens comprando refri "+JSON.stringify(itens));
+			const valorRefrigerante = calcular_conta(itens);
+			console.log("valorRefrigerante " + valorRefrigerante);
+			console.log("parametros: "+JSON.stringify(parameter));
+			agent.add(`Seu pedido está sendo processado, custou ${valorRefrigerante}`);
+
+			//calcular_conta
+			//mandar mensagem final
+		}
+
+
+}
+
 	function get_lista_pedidos(agent, qtd_pedidos){
-		const parametros = agent.contexts[0].parameters;
+		const parametros = contexts[0].parameters;
 		let itens = [];
 		for (let i = 1; i <= qtd_pedidos; i++) {
 			let pedido = {};
@@ -107,6 +144,9 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			const tamanho = parametros["tamanho" + j];
 			const massa = parametros["massa" + j];
 			const borda = parametros["borda" + j];
+			const refrigerante = parametros["refrigerante"+j];
+			const tamanhoR = parametros["tamanhoR"+j];
+			const quantidade = parametros["quantidade"+j];
 			if (qtd === 1){
 				pedido["qtd"] = qtd;
 			}else if (qtd === "outras") {
@@ -126,6 +166,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			}
 			if (borda !== "") {
 				pedido["borda"] = borda;
+			}
+			if (refrigerante !== "") {
+				pedido["refrigerante"] = refrigerante;
+			}
+			if (tamanhoR !== "") {
+				pedido["tamanhoR"] = tamanhoR;
+			}
+			if (quantidade !== "") {
+				pedido["quantidade"] = quantidade;
 			}
 			itens.push(pedido);
 		}
@@ -207,6 +256,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		let pizzas_total = 0
 		itens.forEach( function(pedido) {
 				let valorBorda = 0;
+				let valorRefrigerante = 0;
 				// console.log(`pedido: ${JSON.stringify(pedido)}`);
 				let sabor = cardapio.pizzas[pedido["sabor"]];
 				let valorPizza = sabor.tamanho[pedido.tamanho];
@@ -217,15 +267,29 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 					valorBorda = 0;
 				}
 
+				try {
+					const refrigerante = cardapio.refrigerantes[pedido["refrigerante"]];
+					console.log("Refri " + JSON.stringify(refrigerante));
+					valorRefrigerante = refrigerante.tamanhoR[pedido["tamanhoR"]];
+					const quantidade = pedido["quantidade"];
+					valorRefrigerante = valorRefrigerante*quantidade;
+
+				} catch (e) {
+					console.log(e);
+					valorRefrigerante = 0;
+				}
+
 				if(pedido.hasOwnProperty("qtd_total")){
 					pedido["qtd"] = pedido["qtd_total"] - pizzas_total;
-				}else{
-					pizzas_total += pedido["qtd"];
-					valorTotal = valorTotal + pedido["qtd"]*(valorPizza + valorBorda);
 				}
+
+				pizzas_total += pedido["qtd"];
+				valorTotal = (valorTotal + pedido["qtd"]*(valorPizza + valorBorda))+valorRefrigerante;
+
 				console.log("qtd: "+ pedido["qtd"]);
 				console.log("borda "+valorBorda);
 				console.log("Pizza "+valorPizza);
+				console.log("Refri "+valorRefrigerante);
 
 		});
 
@@ -234,7 +298,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	}
 
 	function finalizar_pedido(agent){
-		const parametros = agent.contexts[0].parameters;
+		const parametros = contexts[0].parameters;
 		const quantidade_pedidos = parametros["quantidade_pedidos"]
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
 		console.log(itens);
@@ -252,6 +316,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	intentMap.set('um pedido pizza', comprar_um_pedido);
 	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
 	intentMap.set('Finalizar pedido sem refrigerante', finalizar_pedido);
-	
+	intentMap.set('compra refrigerante', comprar_refri);
+
 	agent.handleRequest(intentMap);
 });
