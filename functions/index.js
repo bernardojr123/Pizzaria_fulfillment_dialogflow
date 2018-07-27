@@ -209,7 +209,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		if (size.lenght === 1){
 			mensagem_final = "Indentifiquei 1 pedido:" + mensagens[0] + "."
 		}else if (size.lenght === 2) {
-			mensagem_final = "Indentifiquei 2 pedidos:" + mensagens[0] + " e o" + mensagens[1] + "."
+			mensagem_final = "Indentifiquei 2 pedidos:" + mensagens[0] + " e ocd " + mensagens[1] + "."
 		}
 
 		return mensagem_final;
