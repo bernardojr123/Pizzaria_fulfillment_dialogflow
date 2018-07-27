@@ -184,7 +184,12 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			}else {
 				const quantidade = item.qtd;
 				pizzas_pedidas = pizzas_pedidas + quantidade;
-			mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`)
+			mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`);
+			if (size.lenght === 1){
+				mensagem = mensagem.concat(` ${quantidade} pizza(s)`);
+			}else if (size.lenght === 2) {
+				mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`);
+			}
 			}if (item.hasOwnProperty("tamanho")){
 				const tamanho = item.tamanho;
 				mensagem = mensagem.concat(` ${tamanho}`)
@@ -200,7 +205,13 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			}
 			mensagens.push(mensagem)
 		})
-		const mensagem_final = "Indentifiquei 2 pedidos: " + mensagens[0] + " e o " + mensagens[1] + "."
+		let mensagem_final = "";
+		if (size.lenght === 1){
+			mensagem_final = "Indentifiquei 1 pedido:" + mensagens[0] + "."
+		}else if (size.lenght === 2) {
+			mensagem_final = "Indentifiquei 2 pedidos:" + mensagens[0] + " e o" + mensagens[1] + "."
+		}
+
 		return mensagem_final;
 	}
 
@@ -252,7 +263,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		itens.forEach( function(pedido) {
 				let valorBorda = 0;
 				let valorRefrigerante = 0;
-				let sabor = cardapio.pizzas[pedido["sabor"]];
+
+				if pedido.sabor.hasOwnProperty("unico"){
+					const sabor = cardapio.pizzas[pedido.sabor.unico];
+				}else {
+					// const sabor = cardapio.pizzas[pedido.sabor];
+					// TODO: entender o que eh necessário fazer aqui
+				}
+				console.log(`calcular conta -- sabor: ${pedido.sabor.unico}`);
+				console.log(`calcular conta -- tamanho: ${pedido.tamanho}`);
 				let valorPizza = sabor.tamanho[pedido.tamanho];
 				try {
 					let borda = cardapio.borda[pedido.borda];
@@ -294,6 +313,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const parametros = contexts[0].parameters;
 		const quantidade_pedidos = parametros["quantidade_pedidos"]
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
+		montar_msg
 		const valorTotal = calcular_conta(itens);
 		agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
 
