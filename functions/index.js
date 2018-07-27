@@ -5,6 +5,7 @@
 const functions = require('firebase-functions');
 const {WebhookClient} = require('dialogflow-fulfillment');
 const {Card, Suggestion} = require('dialogflow-fulfillment');
+const {Image} = require('dialogflow-fulfillment');
 const cardapio = require('./cardapio.json');
 const perguntas_slot = require('./perguntas_slot.json');
 
@@ -17,7 +18,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	const parameter = request.body.queryResult.parameters;
 	const actions = request.body.queryResult.action;
 	const contexts = request.body.queryResult.outputContexts;
-	console.log("Contexts : >>>> " + JSON.stringify(contexts));
+	// console.log("Contexts : >>>> " + JSON.stringify(contexts));
 	// console.log('Dialogflow Request headers: ' + JSON.stringify(request.headers));
 	// console.log('Dialogflow Request body: ' + JSON.stringify(request.body));
 
@@ -32,7 +33,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const slots_preenchidos = queryResult.allRequiredParamsPresent;
 		if (slots_preenchidos) {
 			const parametros = {"quantidade_pedidos": 1}
-			console.log("comprando uma pizza");
 			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
 		}
 		if (mensagem_slot !== ""){
@@ -48,7 +48,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
   * @return {string} resposta resposta a ser enviada para o dialogflow
 	**/
 	function montar_mensagem_slot(agent, slot_atual, quantidade_pedidos){
-		console.log("quantidade de pedidos: "+quantidade_pedidos);
 		let resposta = ""
 		switch (slot_atual) {
 			case "sabor1":
@@ -67,7 +66,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		return resposta;
 	}
 
-
 	function get_msg_primeiro_acesso(agent, quantidade_pedidos) {
 		const primeiro_acesso = agent.getContext("primeiro_acesso_intencao");
 		let resposta = "";
@@ -75,23 +73,23 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		if (primeiro_acesso === null) {
 			agent.setContext({ name: "primeiro_acesso_intencao", lifespan: 2});
 			const itens = get_lista_pedidos(agent, quantidade_pedidos);
-			resposta = montar_msg_primeiro_acesso(itens)
+			resposta = montar_msg(itens)
 		}
 		return resposta;
 	}
 
 	function comprar_dois_pedidos(agent){
-		const mensagem_p_acesso = get_msg_primeiro_acesso(agent, 2)
-		if (mensagem_p_acesso !== ""){
-			agent.add(mensagem_p_acesso)
-		}
-		const slot_atual = get_slot_atual(agent);
-	  const mensagem_slot = montar_mensagem_slot(agent, slot_atual,2);
 		const slots_preenchidos = queryResult.allRequiredParamsPresent;
 		if (slots_preenchidos) {
 			const parametros = {"quantidade_pedidos": 2}
 			agent.setContext({ name: "pizzaComprada", lifespan: 2, parameters: parametros});
 		}
+		const mensagem_p_acesso = get_msg_primeiro_acesso(agent, 2)
+		if (mensagem_p_acesso !== "" && !slots_preenchidos){
+			agent.add(mensagem_p_acesso)
+		}
+		const slot_atual = get_slot_atual(agent);
+	  const mensagem_slot = montar_mensagem_slot(agent, slot_atual,2);
 		if (mensagem_slot !== ""){
 			agent.add(mensagem_slot);
 		}
@@ -111,6 +109,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 					resposta = resolve_slot(agent, "quantidade1", 1);
 					break;
 		}
+		console.log("Resposta slot refrigerante: " + resposta);
 		if (resposta !== ""){
 			agent.add(resposta);
 		}
@@ -118,20 +117,14 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		if (required_params === true) {
 
 			const quantidade_pedidos = contexts[0].parameters.quantidade_pedidos;
-			console.log("numero de pedidos para comprar refri " + quantidade_pedidos);
 			const itens = get_lista_pedidos(agent, quantidade_pedidos);
-			console.log("itens comprando refri "+JSON.stringify(itens));
 			const valorRefrigerante = calcular_conta(itens);
-			console.log("valorRefrigerante " + valorRefrigerante);
-			console.log("parametros: "+JSON.stringify(parameter));
 			agent.add(`Seu pedido está sendo processado, custou ${valorRefrigerante}`);
 
-			//calcular_conta
-			//mandar mensagem final
 		}
 
 
-}
+	}
 
 	function get_lista_pedidos(agent, qtd_pedidos){
 		const parametros = contexts[0].parameters;
@@ -181,7 +174,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		return itens;
 	}
 
-	function montar_msg_primeiro_acesso(itens){
+	function montar_msg(itens){
 		let mensagens = [];
 		let pizzas_pedidas = 0;
 		itens.forEach(function(item, index) {
@@ -218,31 +211,33 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			const contexto_nome = contexto.name.split('_').pop();
 			return contexto_nome;
 		} catch (e) {
-			console.log("contexto de slot ainda inexistente");
+			console.log("get_slot_autal: Não encontrou nenhum slot.");
 		}
 	}
-
 
 	function resolve_slot(agent, entidade, quantidade_pedidos) {
 		const contexto = agent.getContext(entidade);
 		const contador_entidade = entidade.concat("qtd");
+		console.log("Contador entidade: " + contador_entidade);
 		let parametro = {};
     if (contexto === null){
 			parametro[contador_entidade] = 1;
+			console.log("Caso primeira fala slot");
+			console.log("Parametro primeira fala: " + JSON.stringify(parametro));
 			agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
 			let dicionario = {};
 			if (quantidade_pedidos === 1) {
 				dicionario = perguntas_slot["um pedido"];
-				console.log("dicionario" + dicionario);
 			}else {
 				dicionario = perguntas_slot["multiplos pedidos"];
-				console.log("dicionario" + dicionario);
 			}
 			const message = dicionario[entidade];
 			return message;
     }
     const quantidade  = contexto.parameters[contador_entidade];
+		console.log("Quantidade: " + quantidade);
     if (quantidade === 1){
+			console.log("Caso segunda fala slot");
 			parametro[contador_entidade] = quantidade + 1;
     	agent.setContext({ name: entidade, lifespan: 2, parameters: parametro});
     	return "Não consegui entender, pode repetir por favor?";
@@ -257,7 +252,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		itens.forEach( function(pedido) {
 				let valorBorda = 0;
 				let valorRefrigerante = 0;
-				// console.log(`pedido: ${JSON.stringify(pedido)}`);
 				let sabor = cardapio.pizzas[pedido["sabor"]];
 				let valorPizza = sabor.tamanho[pedido.tamanho];
 				try {
@@ -269,13 +263,11 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 				try {
 					const refrigerante = cardapio.refrigerantes[pedido["refrigerante"]];
-					console.log("Refri " + JSON.stringify(refrigerante));
 					valorRefrigerante = refrigerante.tamanhoR[pedido["tamanhoR"]];
-					const quantidade = pedido["quantidade"];
+					const quantidade = pedido["quantidade"].number;
 					valorRefrigerante = valorRefrigerante*quantidade;
 
 				} catch (e) {
-					console.log(e);
 					valorRefrigerante = 0;
 				}
 
@@ -286,14 +278,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				pizzas_total += pedido["qtd"];
 				valorTotal = (valorTotal + pedido["qtd"]*(valorPizza + valorBorda))+valorRefrigerante;
 
-				console.log("qtd: "+ pedido["qtd"]);
-				console.log("borda "+valorBorda);
-				console.log("Pizza "+valorPizza);
-				console.log("Refri "+valorRefrigerante);
+				// console.log("qtd: "+ pedido["qtd"]);
+				// console.log("borda "+valorBorda);
+				// console.log("Pizza "+valorPizza);
+				// console.log("Pizza "+valorPizza);
+				// console.log("Refri total "+valorRefrigerante);
+
 
 		});
-
-		console.log("Valor Total .. " + valorTotal);
+		//console.log("Valor Total .. " + valorTotal);
 		return valorTotal;
 	}
 
@@ -301,13 +294,15 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const parametros = contexts[0].parameters;
 		const quantidade_pedidos = parametros["quantidade_pedidos"]
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
-		console.log(itens);
 		const valorTotal = calcular_conta(itens);
 		agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
 
 	}
 
-	function mostrar_cardapio (argument) {
+	function mostrar_cardapio (agent) {
+		console.log("mostrar o cardapio de pizzas");
+		agent.add("Na foto abaixo você pode ver os sabores de pizza disponível.")
+		agent.add(new Image("http://jonathandesigner.com/projetos/pizzariatorrediitalia/images/bg_pizza.png"));
 
 	}
 
@@ -317,6 +312,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	intentMap.set('dois pedidos pizza', comprar_dois_pedidos);
 	intentMap.set('Finalizar pedido sem refrigerante', finalizar_pedido);
 	intentMap.set('compra refrigerante', comprar_refri);
+	intentMap.set('cardapio', mostrar_cardapio);
 
 	agent.handleRequest(intentMap);
 });
