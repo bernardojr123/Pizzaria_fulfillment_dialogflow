@@ -118,8 +118,13 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 
 			const quantidade_pedidos = contexts[0].parameters.quantidade_pedidos;
 			const itens = get_lista_pedidos(agent, quantidade_pedidos);
+			console.log(`Comprar refri items: ` + JSON.stringify(itens));
 			const valorRefrigerante = calcular_conta(itens);
-			agent.add(`Seu pedido está sendo processado, custou ${valorRefrigerante}`);
+			const mensagem = montar_msg(itens);
+			agent.add(mensagem);
+			agent.add(`No valor total de R$ ${valorRefrigerante}.`);
+			agent.add("Você está de acordo com o pedido?");
+			// agent.add(`Seu pedido está sendo processado, custou ${valorRefrigerante}`);
 
 		}
 
@@ -175,6 +180,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	}
 
 	function montar_msg(itens){
+		let dict_refri = {}
 		let mensagens = [];
 		let pizzas_pedidas = 0;
 		itens.forEach(function(item, index) {
@@ -186,33 +192,53 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				const quantidade = item.qtd;
 				pizzas_pedidas = pizzas_pedidas + quantidade;
 			// mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`);
-			if (itens.lenght === 1){
+			if (itens.length === 1){
 				mensagem = mensagem.concat(` ${quantidade} pizza(s)`);
-			}else if (itens.lenght === 2) {
+			}else if (itens.length === 2) {
 				mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`);
 			}
 			}if (item.hasOwnProperty("tamanho")){
 				const tamanho = item.tamanho;
-				mensagem = mensagem.concat(` ${tamanho}`)
+				mensagem = mensagem.concat(` ${tamanho}`);
 			}if (item.hasOwnProperty("sabor")){
-				const sabor = item.sabor;
-				mensagem = mensagem.concat(` de ${sabor}`)
+				//TODO verificando no caso de um unico sabor, ver quando for dividido fazer um if aqui.
+				if(item.sabor.hasOwnProperty("unico")){
+					const sabor = item.sabor.unico;
+					mensagem = mensagem.concat(` de ${sabor}`);
+				}else{
+					const sabor = item.sabor.dividido;
+					mensagem = mensagem.concat(` de metade ${sabor.sabor1} e metade ${sabor.sabor2}`);
+				}
 			}if (item.hasOwnProperty("massa")){
 				const massa = item.massa;
-				mensagem = mensagem.concat(` com massa ${massa}`)
+				mensagem = mensagem.concat(` com massa ${massa}`);
 			}if (item.hasOwnProperty("borda")){
 				const borda = item.borda;
-				mensagem = mensagem.concat(` e borda ${borda}`)
+				mensagem = mensagem.concat(` e borda ${borda}`);
+			}if (item.hasOwnProperty("refrigerante")){
+				const refrigerante = item.refrigerante;
+				dict_refri["refrigerante"] = refrigerante
+			}if (item.hasOwnProperty("tamanhoR")){
+				const tamanhoR = item.tamanhoR;
+				dict_refri["tamanhoR"] = tamanhoR
+			}if (item.hasOwnProperty("quantidade")){
+				const quantidade = item.quantidade.number;
+				dict_refri["quantidade"] = quantidade
 			}
 			mensagens.push(mensagem)
 		})
 		let mensagem_final = "";
-		if (itens.lenght === 1){
-			mensagem_final = "Indentifiquei 1 pedido:" + mensagens[0] + "."
-		}else if (itens.lenght === 2) {
-			mensagem_final = "Indentifiquei 2 pedidos:" + mensagens[0] + " e " + mensagens[1] + "."
+		if (itens.length === 1){
+			mensagem_final = "Indentifiquei 1 pedido:" + mensagens[0] + ".";
+			console.log("menssagem 0 " + JSON.stringify(mensagens[0]));
+		}else if (itens.length === 2) {
+			mensagem_final = "Indentifiquei 2 pedidos:" + mensagens[0] + " e " + mensagens[1] + ".";
 		}
-
+		//console.log("MEnsagem final antes de add refri" + mensagem_final);
+		if (Object.keys(dict_refri).length > 0){
+			const mensagemRefri = ` Acompanhado de ${dict_refri.quantidade} ${dict_refri.refrigerante} de ${dict_refri.tamanhoR}.`
+			mensagem_final = mensagem_final + mensagemRefri;
+		}
 		return mensagem_final;
 	}
 
@@ -258,7 +284,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
     }
 	}
 
-	function calcular_conta (itens) {
+	function calcular_conta(itens) {
 		let valorTotal = 0;
 		let pizzas_total = 0
 		itens.forEach( function(pedido) {
@@ -281,7 +307,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 					}else {
 						valorPizza = valorSabor2;
 					}
-
 				}
 				console.log(`calcular conta -- sabor: ${sabor}`);
 				console.log(`calcular conta -- tamanho: ${pedido.tamanho}`);
@@ -291,46 +316,36 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 				} catch (e) {
 					valorBorda = 0;
 				}
-
 				try {
 					const refrigerante = cardapio.refrigerantes[pedido["refrigerante"]];
 					valorRefrigerante = refrigerante.tamanhoR[pedido["tamanhoR"]];
 					const quantidade = pedido["quantidade"].number;
 					valorRefrigerante = valorRefrigerante*quantidade;
-
 				} catch (e) {
 					valorRefrigerante = 0;
 				}
-
 				if(pedido.hasOwnProperty("qtd_total")){
 					pedido["qtd"] = pedido["qtd_total"] - pizzas_total;
 				}
-
 				pizzas_total += pedido["qtd"];
 				valorTotal = (valorTotal + pedido["qtd"]*(valorPizza + valorBorda))+valorRefrigerante;
-
-				// console.log("qtd: "+ pedido["qtd"]);
-				// console.log("borda "+valorBorda);
-				// console.log("Pizza "+valorPizza);
-				// console.log("Pizza "+valorPizza);
-				// console.log("Refri total "+valorRefrigerante);
-
-
 		});
-		//console.log("Valor Total .. " + valorTotal);
 		return valorTotal;
 	}
 
 	function finalizar_pedido(agent){
 		const parametros = contexts[0].parameters;
-		const quantidade_pedidos = parametros["quantidade_pedidos"]
+		const quantidade_pedidos = parametros["quantidade_pedidos"];
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
+		const mesagem = montar_msg(itens);
 		const valorTotal = calcular_conta(itens);
-		agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
-
+		// agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
+		agent.add(mensagem);
+		agent.add(`No valor total de R$ ${valorTotal}.`);
+		agent.add("Você está de acordo com o pedido?");
 	}
 
-	function mostrar_cardapio (agent) {
+	function mostrar_cardapio(agent) {
 		console.log("mostrar o cardapio de pizzas");
 		agent.add("Na foto abaixo você pode ver os sabores de pizza disponível.")
 		agent.add(new Image("http://jonathandesigner.com/projetos/pizzariatorrediitalia/images/bg_pizza.png"));
