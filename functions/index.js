@@ -124,8 +124,6 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			agent.add(mensagem);
 			agent.add(`No valor total de R$ ${valorRefrigerante}.`);
 			agent.add("Você está de acordo com o pedido?");
-			// agent.add(`Seu pedido está sendo processado, custou ${valorRefrigerante}`);
-
 		}
 
 
@@ -180,7 +178,8 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 	}
 
 	function montar_msg(itens){
-		let dict_refri = {}
+		// console.log("array de item: " + JSON.stringify(itens));
+		let dict_refri = {};
 		let mensagens = [];
 		let pizzas_pedidas = 0;
 		itens.forEach(function(item, index) {
@@ -197,33 +196,37 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 			}else if (itens.length === 2) {
 				mensagem = mensagem.concat(` o ${(index+1).toString()}º pedido: ${quantidade} pizza(s)`);
 			}
-			}if (item.hasOwnProperty("tamanho")){
+		}if (item.tamanho != undefined ){
 				const tamanho = item.tamanho;
 				mensagem = mensagem.concat(` ${tamanho}`);
-			}if (item.hasOwnProperty("sabor")){
+			}if (item.sabor != undefined ){
 				//TODO verificando no caso de um unico sabor, ver quando for dividido fazer um if aqui.
-				if(item.sabor.hasOwnProperty("unico")){
+				if(item.sabor.unico != undefined ){
 					const sabor = item.sabor.unico;
 					mensagem = mensagem.concat(` de ${sabor}`);
 				}else{
 					const sabor = item.sabor.dividido;
 					mensagem = mensagem.concat(` de metade ${sabor.sabor1} e metade ${sabor.sabor2}`);
 				}
-			}if (item.hasOwnProperty("massa")){
+			}if (item.massa != undefined ){
 				const massa = item.massa;
 				mensagem = mensagem.concat(` com massa ${massa}`);
-			}if (item.hasOwnProperty("borda")){
+			}if (item.borda != undefined ){
 				const borda = item.borda;
 				mensagem = mensagem.concat(` e borda ${borda}`);
-			}if (item.hasOwnProperty("refrigerante")){
+			}if (item.refrigerante != undefined ){
 				const refrigerante = item.refrigerante;
 				dict_refri["refrigerante"] = refrigerante
-			}if (item.hasOwnProperty("tamanhoR")){
+			}if (item.tamanhoR != undefined){
 				const tamanhoR = item.tamanhoR;
 				dict_refri["tamanhoR"] = tamanhoR
-			}if (item.hasOwnProperty("quantidade")){
+			}if (item.quantidade != undefined){
+				console.log(JSON.stringify(item));
+				console.log(item.hasOwnProperty("quantidade"));
+				console.log("quantidade" in item);
+				// console.log("quantidade"  item);
 				const quantidade = item.quantidade.number;
-				dict_refri["quantidade"] = quantidade
+				dict_refri["quantidade"] = quantidade;
 			}
 			mensagens.push(mensagem)
 		})
@@ -337,7 +340,7 @@ exports.dialogflowFirebaseFulfillment = functions.https.onRequest((request, resp
 		const parametros = contexts[0].parameters;
 		const quantidade_pedidos = parametros["quantidade_pedidos"];
 		const itens = get_lista_pedidos(agent, quantidade_pedidos);
-		const mesagem = montar_msg(itens);
+		const mensagem = montar_msg(itens);
 		const valorTotal = calcular_conta(itens);
 		// agent.add(`O seu pedido está sendo processado, todo o pedido custou ${valorTotal}`);
 		agent.add(mensagem);
